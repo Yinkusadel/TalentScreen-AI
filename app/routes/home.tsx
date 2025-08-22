@@ -3,6 +3,10 @@ import type { Route } from "./+types/home";
 import { resumes } from "../../constants";
 import ResumeCard from "~/components/ResumeCard";
 
+import { useEffect } from 'react'
+import { useNavigate } from "react-router";
+import { usePuterStore } from '~/lib/puter';
+
 export function meta({ }: Route.MetaArgs) {
   return [
     { title: "TalentScreen-AI" },
@@ -11,6 +15,16 @@ export function meta({ }: Route.MetaArgs) {
 }
 
 export default function Home() {
+
+  const { isLoading, auth } = usePuterStore();
+  const navigate = useNavigate();
+
+
+  useEffect(() => {
+    if(!auth.isAuthenticated) navigate('/auth?next=/');
+  }, [auth.isAuthenticated])
+
+
   return <main className="bg-[url('/images/bg-main.png')] bg-cover">
 
     <Navbar />
