@@ -8,16 +8,19 @@ export const meta = () => ([
 ])
 
 const Auth = () => {
-
     const { isLoading, auth } = usePuterStore();
     const location = useLocation();
-    const next = location.search.split('next=')[1];
+    const next = location.search.split('next=')[1] || '/'; // fallback to home
     const navigate = useNavigate();
 
-
     useEffect(() => {
-        if (auth.isAuthenticated) navigate(next);
+        if (auth.isAuthenticated) {
+            // Optionally auto-redirect after a few seconds
+            // navigate(next);
+        }
     }, [auth.isAuthenticated, next])
+
+    const handleRedirectHome = () => navigate('/')
 
     return (
         <main className="bg-[url('/images/bg-auth.png')] bg-cover min-h-screen flex items-center justify-center">
@@ -25,34 +28,45 @@ const Auth = () => {
                 <section className="flex flex-col gap-8 bg-white rounded-2xl p-10">
                     <div className="flex flex-col items-center gap-2 text-center">
                         <h1>Hi There</h1>
-                        <h2>Log in to move forward with your </h2>
-                        <h2>professional journey </h2>
+                        {auth.isAuthenticated ? (
+                            <>
+                                <h2>Welcome back!</h2>
+                                <h2>Continue your professional journey</h2>
+                            </>
+                        ) : (
+                            <>
+                                <h2>Log in to move forward with your</h2>
+                                <h2>professional journey</h2>
+                            </>
+                        )}
                     </div>
 
-                    <div>
+                    <div className="flex flex-col gap-4 items-center">
                         {isLoading ? (
                             <button className="auth-button animate-pulse">
                                 <p>Signing you in...</p>
                             </button>
                         ) : (
                             <>
-                                {auth.isAuthenticated ? (
-                                    <button className="auth-button" onClick={auth.signOut}>
-                                        <p>Log Out</p>
-                                    </button>
-                                ) : (
+                                {!auth.isAuthenticated ? (
                                     <button className="auth-button" onClick={auth.signIn}>
                                         <p>Log In</p>
                                     </button>
+                                ) : (
+                                    <>
+                                        <button className="auth-button" onClick={auth.signOut}>
+                                            <p>Log Out</p>
+                                        </button>
+                                        <button className="auth-button" onClick={handleRedirectHome}>
+                                            <p>Go to Home</p>
+                                        </button>
+                                    </>
                                 )}
                             </>
                         )}
                     </div>
-
                 </section>
             </div>
-
-
         </main>
     )
 }
